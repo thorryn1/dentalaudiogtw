@@ -25,11 +25,11 @@ jobs:
       - name: Download narration audio
         run: |
           mkdir -p render_audio
-          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T10_11_57_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4%282%29.mp3" -o render_audio/01-intro.mp3
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T10_11_57_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/01-intro.mp3
           curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_03_50_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/02-gigi-atas.mp3
           curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_04_04_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/03-gigi-bawah.mp3
           curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_04_26_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/04-geraham.mp3
-          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T10_15_59_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4%281%29.mp3" -o render_audio/05-lidah.mp3
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T10_15_26_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/05-lidah.mp3
           curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_31_30_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/06-penutup.mp3
 
       - name: Assemble narration in the agreed order

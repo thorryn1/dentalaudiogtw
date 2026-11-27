@@ -39,12 +39,12 @@ jobs:
           done > render_audio/concat.txt
           ffmpeg -y -f concat -safe 0 -i render_audio/concat.txt -ar 44100 -ac 2 render_audio/narration.wav
 
-      - name: Mux narration onto the original 1080p animation
+      - name: Mux full narration and extend the final frame if needed
         run: |
-          DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 Dental_Education_Animation_v2_1080p.mp4)
           ffmpeg -y -i Dental_Education_Animation_v2_1080p.mp4 -i render_audio/narration.wav \
-            -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -b:a 192k \
-            -af apad -t "$DURATION" -movflags +faststart Dental_Education_Animation_v2_FINAL.mp4
+            -map 0:v:0 -map 1:a:0 -vf "tpad=stop_mode=clone:stop_duration=5" \
+            -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k \
+            -shortest -movflags +faststart Dental_Education_Animation_v2_FINAL.mp4
 
       - name: Commit rendered MP4
         run: |
@@ -52,4 +52,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add Dental_Education_Animation_v2_FINAL.mp4
           git commit -m "Render Dental Education Animation V2 final MP4" || echo "No changes to commit"
-          git push
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main

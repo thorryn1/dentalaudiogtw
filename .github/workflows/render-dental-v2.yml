@@ -1,0 +1,55 @@
+name: Render Dental Education Animation V2
+
+on:
+  push:
+    paths:
+      - ".github/workflows/render-dental-v2.yml"
+      - "Dental_Education_Animation_v2_1080p.mp4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Download narration audio
+        run: |
+          mkdir -p render_audio
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T10_11_57_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4%282%29.mp3" -o render_audio/01-intro.mp3
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_03_50_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/02-gigi-atas.mp3
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_04_04_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/03-gigi-bawah.mp3
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_04_26_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/04-geraham.mp3
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T10_15_59_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4%281%29.mp3" -o render_audio/05-lidah.mp3
+          curl -fL "https://raw.githubusercontent.com/thorryn1/dentalaudiogtw/main/ElevenLabs_2026-11-27T13_31_30_Bangnik%20-%20Indonesia_pvc_s50_sim75_v4.mp3" -o render_audio/06-penutup.mp3
+
+      - name: Assemble narration in the agreed order
+        run: |
+          for f in render_audio/01-intro.mp3 render_audio/02-gigi-atas.mp3 render_audio/03-gigi-bawah.mp3 render_audio/04-geraham.mp3 render_audio/05-lidah.mp3 render_audio/06-penutup.mp3; do
+            printf "file '%s'\\n" "$PWD/$f"
+          done > render_audio/concat.txt
+          ffmpeg -y -f concat -safe 0 -i render_audio/concat.txt -ar 44100 -ac 2 render_audio/narration.wav
+
+      - name: Mux narration onto the original 1080p animation
+        run: |
+          DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 Dental_Education_Animation_v2_1080p.mp4)
+          ffmpeg -y -i Dental_Education_Animation_v2_1080p.mp4 -i render_audio/narration.wav \
+            -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -b:a 192k \
+            -af apad -t "$DURATION" -movflags +faststart Dental_Education_Animation_v2_FINAL.mp4
+
+      - name: Commit rendered MP4
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Dental_Education_Animation_v2_FINAL.mp4
+          git commit -m "Render Dental Education Animation V2 final MP4" || echo "No changes to commit"
+          git push
